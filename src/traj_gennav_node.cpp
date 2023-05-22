@@ -492,7 +492,14 @@ trajectory_msgs::MultiDOFJointTrajectory generateTrajOnline(double timeinTraj, d
     if (_timeinTraj > polyTime_.sum())
     {
       if (n == 0)
-        ROS_INFO("Finished publishing trajectory. Hold position instead.");
+      {
+        static ros::Time t_last_report = ros::Time::now();
+        if ((ros::Time::now() - t_last_report).toSec() > 1.0)
+        {
+          t_last_report = ros::Time::now();
+          ROS_INFO("Finished publishing trajectory. Hold position instead.");
+        }
+      }
 
       _pos = initial_waypoints_.back().pos; // set pos and yaw as the final waypoint
       _yaw = initial_waypoints_.back().yaw;
@@ -597,7 +604,14 @@ trajectory_msgs::MultiDOFJointTrajectory generateTrajNominal(double timeinTraj, 
     if (_timeinTraj > polyTime_.sum())
     {
       if (n == 0)
-        ROS_INFO("Finished publishing trajectory. Hold position instead.");
+      {
+        static ros::Time t_last_report = ros::Time::now();
+        if ((ros::Time::now() - t_last_report).toSec() > 1.0)
+        {
+          t_last_report = ros::Time::now();
+          ROS_INFO("Finished publishing trajectory. Hold position instead.");
+        }
+      }
 
       _pos = initial_waypoints_.back().pos; // set pos and yaw as the final waypoint
       _yaw = initial_waypoints_.back().yaw;
