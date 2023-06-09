@@ -530,10 +530,10 @@ trajectory_msgs::MultiDOFJointTrajectory generateTrajOnline(double timeinTraj, d
         for (int k = 0; k < 2 * dev_order_; k++)
         {
           _pos(i) += polyCoeff_(nSeg_wip_, i * 2 * dev_order_ + k) * std::pow(_timeinTraj - _timeSum, k);
-          // _vel(i) += (k>0? k*
-          //             polyCoeff_(nSeg_wip_, i*2*dev_order_+ k) * std::pow(_timeinTraj-_timeSum, k-1):0);
-          // _acc(i) += (k>1? k*(k-1)*
-          //             polyCoeff_(nSeg_wip_, i*2*dev_order_+ k) * std::pow(_timeinTraj-_timeSum, k-2):0);
+          _vel(i) += (k>0? k*
+                      polyCoeff_(nSeg_wip_, i*2*dev_order_+ k) * std::pow(_timeinTraj-_timeSum, k-1):0);
+          _acc(i) += (k>1? k*(k-1)*
+                      polyCoeff_(nSeg_wip_, i*2*dev_order_+ k) * std::pow(_timeinTraj-_timeSum, k-2):0);
         }
       }
       for (int k = 0; k < 2 * dev_order_; k++)
@@ -790,7 +790,7 @@ bool readFileCallback(std_srvs::Empty::Request &request, std_srvs::Empty::Respon
 
 void sampleWholeTrajandVisualize()
 {
-  double sample_T = 0.5;
+  double sample_T = 0.1;
   double T_total = polyTime_.sum();
 
   nav_msgs::Path pathVisualizer;
