@@ -578,8 +578,8 @@ trajectory_msgs::MultiDOFJointTrajectory generateTrajOnline(double timeinTraj, d
     vel_msg.linear.y = _vel(1);
     vel_msg.linear.z = _vel(2);
     accel_msg.linear.x = _acc(0);
-    accel_msg.linear.x = _acc(1);
-    accel_msg.linear.x = _acc(2);
+    accel_msg.linear.y = _acc(1);
+    accel_msg.linear.z = _acc(2);
     trajpt_msg.velocities.push_back(vel_msg);
     trajpt_msg.accelerations.push_back(accel_msg);
     trajset_msg.points.push_back(trajpt_msg);
