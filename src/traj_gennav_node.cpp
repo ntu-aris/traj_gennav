@@ -1,5 +1,7 @@
 #include <traj_gennav/traj_gennav_node.h>
 
+bool got_request_ = false;
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "traj_gennav");
@@ -90,7 +92,7 @@ int main(int argc, char **argv)
   ros::Subscriber start_path_command_sub = nh.subscribe<std_msgs::Bool>("/st_sdk/start_following_path", 10, start_path_command_cb);
 
   ros::Timer timer = nh.createTimer(ros::Duration(1.0 / 25), TimerCallback);
-  ros::Timer replantimer = nh.createTimer(ros::Duration(1.0 / 5), ReplanTimerCallback);
+  ros::Timer replantimer = nh.createTimer(ros::Duration(1.0 / 0.3), ReplanTimerCallback);
 
   read_service_ = nh.advertiseService("readfile", readFileCallback);
 
@@ -377,6 +379,18 @@ void path_input_cb(const nav_msgs::Path::ConstPtr &msg) // for st
 // }
 void ReplanTimerCallback(const ros::TimerEvent &)
 {
+  if (got_request_)
+  {
+    if (got_odom_)
+    {
+      std_srvs::Empty::Request req1;
+      std_srvs::Empty::Response rep1;
+      readFileCallback(req1, rep1);
+      got_request_ = false;
+      executePathCallback(req1, rep1);
+    }
+    
+  }
   if (got_odom_ && wall_msg_updated_ && trajectory_wip_)
   {
     // wall_msg_updated_ = false;
@@ -668,10 +682,11 @@ trajectory_msgs::MultiDOFJointTrajectory generateTrajNominal(double timeinTraj, 
 
 bool readFileCallback(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {
-  // if (!got_odom_){
-  //   ROS_WARN("NO ODOM, WILL NOT CALCULATE TRAJECTORY");
-  //   return false;
-  // }
+  if (!got_odom_){
+    ROS_WARN("[Trajectory Generator]NO Odom received yet, waiting for odom...");
+    got_request_ = true;
+    return false;
+  }
   start_trajectory_ = false;
   idle_state_ = true;
   trajectory_wip_ = false;
