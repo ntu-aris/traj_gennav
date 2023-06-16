@@ -726,7 +726,10 @@ bool readFileCallback(std_srvs::Empty::Request &request, std_srvs::Empty::Respon
   {
     if (heading_mode_ == "manual")
     {
-      initial_waypoints_[i].yaw = heading[i] * (M_PI / 180.0);
+      if (i==1)
+        initial_waypoints_[i].yaw = heading[0] * (M_PI / 180.0);
+      else
+        initial_waypoints_[i].yaw = heading[i-2] * (M_PI / 180.0);
     }
     else if (heading_mode_ == "auto")
     {
